@@ -1,0 +1,2 @@
+GCC not defined BITS_BIG_ENDIAN.
+*p = 3 

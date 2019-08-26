@@ -11,7 +11,7 @@ def recv(serial):
         sleep(0.02)
     return data
 
-s_port = '/dev/pts/22'
+s_port = '/dev/ttyUSB0'
 
 if __name__ == '__main__':
     serial = serial.Serial( s_port, 9600, timeout=0.5)  #/dev/ttyUSB0

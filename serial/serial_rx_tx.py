@@ -79,7 +79,7 @@ def print_time_stamp():
     data_secs = (ct - int(ct)) * 1000
     time_stamp = "%s.%03d" % (data_head, data_secs)
     print time_stamp,
-    print "   ",
+    print ":   ",
     #stamp = ("".join(time_stamp.split()[0].split("-"))+"".join(time_stamp.split()[1].split(":"))).replace('.', '')
     #print(stamp)
      
@@ -96,8 +96,11 @@ def serial_rx_thread(no, ser):
             # not add "\n" at the end
             print "%.2x " % struct.unpack('B',str[i] ), 
 
+	if len(str) >= 1:
+		print ""
+
         if len(str) >= 1:
-	    print "\r\n"
+	    print " (len=%d) \r\n" % len(str)
         
 
 frame_query="\xFF\xFF\x0A\x00\x00\x00\x00\x00\x00\x01\x4d\x01\x59"
@@ -125,7 +128,7 @@ def serial_user_cmd(no, ser):
 
 
 def test():			
-    ser = serial.Serial('/dev/pts/22', 9600, timeout=0.001)
+    ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=0.001)
 
     if ser.isOpen() :
         print "open success"
