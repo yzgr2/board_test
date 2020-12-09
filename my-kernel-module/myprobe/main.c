@@ -1,0 +1,87 @@
+#include<linux/module.h>
+#include<linux/kernel.h>
+#include<linux/delay.h>
+#include<linux/fs.h>
+#include<linux/kthread.h>
+#include<linux/jiffies.h>
+#include<linux/kprobes.h>
+
+struct kprobe kp;
+unsigned int cnt=0;
+
+// struct pt_regs defined in: arch/x86/include/asm/ptrace.h#L11
+int my_pre(struct kprobe *p, struct pt_regs *regs)
+{
+	if(cnt==0)
+	{
+		printk(">> my_pre: p->addr:%p ip=%lx\n", p->addr,regs->ip);
+	}
+	cnt++;
+	if( (cnt&0xFF) == 0)
+	{
+		printk(">> my_pre: p->addr:%p ip=%lx cnt=%u\n", p->addr,regs->ip, cnt);
+	}
+	
+	return 0;
+}
+
+void my_post(struct kprobe *kp, struct pt_regs *regs, unsigned long flags)
+{
+	//return 0;
+}
+
+/*
+int my_fault(struct kprobe *p, struct pt_regs *regs, int trapnr)
+{
+//	printk("fault_handler:p->addr=0x%p, eflags=0x%lx\n", p->addr,
+//		regs->eflags);
+	return 0;
+}
+*/
+
+int register_my_hook(unsigned long func_addr)
+{
+	int ret;
+	kp.pre_handler = my_pre;
+	kp.post_handler = my_post;
+	
+	kp.addr = (kprobe_opcode_t *)func_addr;
+	
+	ret = register_kprobe(&kp);
+	if (ret < 0) {
+		printk("Failed to register kprobe. ret=%d\n", ret);
+		return ret;
+	}
+
+	printk("> probe on func: %lx\n", func_addr );
+	
+	return 0;
+}
+
+static __init int init_hello_world(void)
+{
+	int ret;
+	unsigned long addr = 0xffffffffa02b5020;
+	
+	ret = register_my_hook( addr );
+	if(ret < 0)
+	{
+		return ret;
+	}
+	
+	printk(">> Registerd hooks.\n");
+	
+	return 0;
+}
+
+static __exit void exit_hello_world(void)
+{
+	unregister_kprobe(&kp);
+	printk("exit module\n");
+	
+	return;
+}
+
+module_init(init_hello_world);
+module_exit(exit_hello_world);
+MODULE_LICENSE("GPL");

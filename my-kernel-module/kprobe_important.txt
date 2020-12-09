@@ -1,0 +1,8 @@
+Kprobes: May failed to trace function, because optimization.
+
+Thus, if you want to tweak the kernel's execution path, you need to suppress optimization,
+using one of the following techniques:
+- Specify an empty function for the kprobe's post_handler or break_handler.
+ or
+- Execute 'sysctl -w debug.kprobes_optimization=n'
+

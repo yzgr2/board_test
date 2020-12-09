@@ -1,0 +1,18 @@
+ifeq ($(KERNELRELEASE),)
+	#指向你的内核代码目录
+	KERNELDIR ?=/home/yzg/TDD/V100R001C00B060/build_dir/linux-transcede-2200_t2200/linux-3.0.51   
+	PWD := $(shell pwd)
+	
+all:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules 
+
+clean:	 
+	rm -f *.ko *.o *.mod.o *.mod.c *.symvers
+	
+else
+	obj-m	:= semonitor.o 
+	semonitor-objs = dev_ioc.o rx_hooks.o tcp_analyze.o tcp_analyze.o gtpu_iperf_udp.o tx_hooks.o tx_gtpu_iperf_timestamp.o
+endif
+
+#export CROSS_COMPILE=arm-none-linux-gnueabi-
+#make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
